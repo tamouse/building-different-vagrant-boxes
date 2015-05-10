@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "deb8"
+  config.vm.box_url = "https://github.com/holms/vagrant-jessie-box/releases/download/Jessie-v0.1/Debian-jessie-amd64-netboot.box"
+  config.vm.network "private_network", ip: "192.168.100.11"
+  config.vm.hostname = 'deb8a'
+  config.vm.provider "virtualbox" do |vm|
+    vm.customize ["modifyvm", :id, "--memory", "2048"] # 4096 on a heavy duty box is good
+    vm.customize ["modifyvm", :id, "--vram", "12"]     # This gives enough to run x if you need to (e.g. xvfb)
+    vm.customize ["modifyvm", :id, "--cpus", "2"]      # Bump to 4 on a super multicore machine (these are cores)
+    vm.customize ["modifyvm", :id, "--natdnshostresolver1", "on"] # to use that nifty Resolve thing above
+  end
+  config.ssh.forward_agent = true
+
+  config.vm.provision "ansible" do |a|
+    a.playbook = 'provisioning/playbook.yml'
+  end
+end

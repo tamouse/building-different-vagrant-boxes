@@ -1,0 +1,23 @@
+---
+- name: acquire mpapis public key
+  shell: /usr/bin/curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+
+- name: install rvm
+  shell: /usr/bin/curl -sSL https://get.rvm.io | bash -s stable
+
+- name: setup .bashrc.d/rvm
+  copy: src=files/rvm.sh dest=.bashrc.d/rvm mode=0755
+
+- name: install ruby 2.2.1
+  shell: /bin/bash -l -c 'rvm install 2.2.1'
+
+- name: install gemrc files
+  copy: src=files/gemrc dest=/home/vagrant/.gemrc mode=0644
+
+- name: install gems
+  shell: /bin/bash -l -c 'rvm @global do gem install {{ item }}'
+  with_items:
+    - bundler
+    - pry
+    - pry-byebug
+    - rails

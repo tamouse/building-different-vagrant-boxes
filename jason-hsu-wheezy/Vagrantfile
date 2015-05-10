@@ -1,0 +1,20 @@
+require 'resolv'
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box       = 'deb7hsu' # Name of machine in "vagrant box list"
+  config.vm.box_url = 'http://downloads.sourceforge.net/project/vagrant-debian-wheezy-rvm/debian-wheezy-rvm-2015_03_07.box?r=&ts=1425788198&use_mirror=master'
+  config.vm.hostname = 'vagrant-rvm' # Name of machine in VirtualBox
+  config.vm.boot_timeout = 600
+  config.vm.network "private_network", ip: "192.168.100.20"
+  config.vm.network :forwarded_port, guest: 3000, host: 3000
+  config.vm.network :forwarded_port, guest: 5432, host: 15432
+  config.vm.synced_folder "shared", "/home/vagrant/shared"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+    vb.cpus   = "2"
+    vb.customize ["modifyvm", :id, "--vram", "12"]
+  end
+end
